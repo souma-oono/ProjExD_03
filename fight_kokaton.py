@@ -7,7 +7,7 @@ import pygame as pg
 
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
-NUM_OF_BOMBS = 5  # 爆弾の数
+NUM_OF_BOMBS = 1  # 爆弾の数
 
 
 def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
@@ -155,37 +155,55 @@ def main():
     beam = None
 
     tmr = 0
-    while True:
+    hit_bomb = 0  # 撃ち落とした爆弾の数
+    
+    while True:        
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beam = Beam(bird)
 
-        tmr += 1
         screen.blit(bg_img, [0, 0])
         
+        if hit_bomb == NUM_OF_BOMBS:
+            font = pg.font.Font(None, 40)
+            text = font.render(f"Hit Bomb: {hit_bomb}", False, (255, 0, 0))
+            screen.blit(text, (50, 50))
         
-        for bomb in bombs:
-            bomb.update(screen)
-            if bird._rct.colliderect(bomb._rct):
-                # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-                bird.change_img(8, screen)
-                pg.display.update()
-                time.sleep(1)
-                return
+        else:
+            tmr += 1
             
-        key_lst = pg.key.get_pressed()
-        bird.update(key_lst, screen)
+            for bomb in bombs:
+                bomb.update(screen)
+                if bird._rct.colliderect(bomb._rct):
+                    # ゲームオーバー時に，こうかとん画像を切り替え，3秒間表示させる
+                    bird.change_img(8, screen)
+                    
+                    font = pg.font.Font(None, 40)
+                    text = font.render(f"Hit Bomb: {hit_bomb}", False, (255, 0, 0))
+                    screen.blit(text, (20, 30))
+            
+                    pg.display.update()
+                    time.sleep(3)
+                    return
+                
+            key_lst = pg.key.get_pressed()
+            bird.update(key_lst, screen)
 
-        if beam is not None:  # ビームが存在しているとき
-            beam.update(screen)
-            for i, bomb in enumerate(bombs):
-                if beam._rct.colliderect(bomb._rct):
-                    beam = None
-                    del bombs[i]
-                    bird.change_img(6, screen)
-                    break
+            if beam is not None:  # ビームが存在しているとき
+                beam.update(screen)
+                for i, bomb in enumerate(bombs):
+                    if beam._rct.colliderect(bomb._rct):
+                        beam = None
+                        hit_bomb += 1
+                        del bombs[i]
+                        bird.change_img(6, screen)                    
+                        break
+
+            font = pg.font.Font(None, 40)
+            text = font.render(f"Hit Bomb: {hit_bomb}", False, (255, 0, 0))
+            screen.blit(text, (20, 30))
 
         pg.display.update()
         clock.tick(1000)
