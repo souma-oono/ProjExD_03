@@ -154,7 +154,7 @@ def main():
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
 
-    tmr = 0
+    tmr = 0  # 経過時間
     hit_bomb = 0  # 撃ち落とした爆弾の数
     
     while True:        
@@ -166,30 +166,46 @@ def main():
 
         screen.blit(bg_img, [0, 0])
         
+        # すべてのボムが落とされた場合
         if hit_bomb == NUM_OF_BOMBS:
-            font = pg.font.Font(None, 40)
-            text = font.render(f"Game Clear", False, (255, 0, 0))
-            screen.blit(text, (50, 50))
             
-            font = pg.font.Font(None, 40)
-            text = font.render(f"Bomb: {hit_bomb}", False, (255, 0, 0))
-            screen.blit(text, (100, 140))
+            # ゲーム・クリアを画面に表示
+            font = pg.font.Font(None, 40)  # フォント設定 (標準フォント, 40pt)
+            text = font.render(f"Game Clear", False, (255, 0, 0))  # 文字設定 (赤色)
+            screen.blit(text, (50, 50))  # (50, 50)に文字を表示
             
-            font = pg.font.Font(None, 40)
-            text = font.render(f"Time: {int(tmr/1000*3.75)}", False, (255, 0, 0))
-            screen.blit(text, (100, 200))
+            # 落としたボム数を画面に表示
+            font = pg.font.Font(None, 40)  # フォント設定 (標準フォント, 40pt)
+            text = font.render(f"Bomb: {hit_bomb}", False, (255, 0, 0))  # 文字設定 (赤色)
+            screen.blit(text, (100, 140))  # (100, 140)に文字を表示
             
+            # 経過時間を画面に表示
+            font = pg.font.Font(None, 40)  #  フォント設定 (標準フォント, 40pt)
+            text = font.render(f"Time: {int(tmr/1000*3.75)}", False, (255, 0, 0))  # 文字設定 (赤色)
+            screen.blit(text, (100, 200))  # (100, 200)に文字を表示
+            
+            # ボム数と経過時間からスコアを計算
+            """
+            最終スコアの計算式
+            
+            最終スコア = (落としたボム数 × 10) + (65535 - 経過時間 × 4)
+            """
             final_score = int((hit_bomb*10)+(65535-tmr*4))
             if final_score < 0:
                 final_score = 0
-            font = pg.font.Font(None, 40)
-            text = font.render(f"Score: {final_score}", False, (255, 0, 0))
-            screen.blit(text, (100, 290))
             
+            # 最終スコアを画面に表示
+            font = pg.font.Font(None, 40)  #  フォント設定 (標準フォント, 40pt)
+            text = font.render(f"Score: {final_score}", False, (255, 0, 0))  # 文字設定 (赤色)
+            screen.blit(text, (100, 290))  # (100, 290)に文字を表示
+            
+            # こうかとんを画面中央に表示
             bird = Bird(3, (900, 400))
-            bird.change_img(9, screen)
+            bird.change_img(9, screen)  # こうかとん(9番)を表示
         
+        # ボムがまだ残っている場合
         else:
+            # 経過時間を更新
             tmr += 1
             
             for bomb in bombs:
@@ -219,6 +235,7 @@ def main():
                         bird.change_img(6, screen)                    
                         break
 
+            # 落としたボム数を画面に表示
             font = pg.font.Font(None, 40)
             text = font.render(f"Hit Bomb: {hit_bomb}", False, (255, 0, 0))
             screen.blit(text, (20, 30))
