@@ -7,7 +7,7 @@ import pygame as pg
 
 WIDTH = 1600  # ゲームウィンドウの幅
 HEIGHT = 900  # ゲームウィンドウの高さ
-NUM_OF_BOMBS = 1  # 爆弾の数
+NUM_OF_BOMBS = 5  # 爆弾の数
 
 
 def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
@@ -168,8 +168,26 @@ def main():
         
         if hit_bomb == NUM_OF_BOMBS:
             font = pg.font.Font(None, 40)
-            text = font.render(f"Hit Bomb: {hit_bomb}", False, (255, 0, 0))
+            text = font.render(f"Game Clear", False, (255, 0, 0))
             screen.blit(text, (50, 50))
+            
+            font = pg.font.Font(None, 40)
+            text = font.render(f"Bomb: {hit_bomb}", False, (255, 0, 0))
+            screen.blit(text, (100, 140))
+            
+            font = pg.font.Font(None, 40)
+            text = font.render(f"Time: {int(tmr/1000*3.75)}", False, (255, 0, 0))
+            screen.blit(text, (100, 200))
+            
+            final_score = int((hit_bomb*10)+(65535-tmr*4))
+            if final_score < 0:
+                final_score = 0
+            font = pg.font.Font(None, 40)
+            text = font.render(f"Score: {final_score}", False, (255, 0, 0))
+            screen.blit(text, (100, 290))
+            
+            bird = Bird(3, (900, 400))
+            bird.change_img(9, screen)
         
         else:
             tmr += 1
